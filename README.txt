@@ -1,41 +1,42 @@
 LANDININV2 — HTML, CSS Y JAVASCRIPT PUROS
 
 Uso
-Abre index.html en el navegador. Los archivos están listos para alojarse como
-sitio estático. No se necesita React, Astro, Node ni compilación del frontend.
-La fotografía y las tipografías Bebas Neue y DM Sans se incluyen localmente.
+La página conserva su diseño original y sus recursos locales. Para que el
+formulario funcione, usa el servidor Node incluido: node --env-file=.env server.mjs
+Requiere Node 24. No necesita dependencias ni compilación del frontend.
+Abrir index.html directamente sirve para revisar el diseño, sin envío de datos.
 
 Subir a Railway
-1. Conecta a Railway un repositorio que contenga esta carpeta.
+1. Conecta el repositorio que contiene esta carpeta a un servicio de Railway.
 2. Si el repositorio es landings, configura Root Directory como /landininv2
-   y la ruta del archivo de configuración como /landininv2/railway.json.
-   Si el contenido de esta carpeta es la raíz del repositorio, deja los valores
-   predeterminados, sin subdirectorio.
-3. El Dockerfile sirve los archivos con Nginx. No definas comandos adicionales
-   de build ni de inicio. Usa el puerto PORT que Railway asigna (8080 por defecto).
-4. Genera el dominio del servicio en Networking.
-Configuración basada en https://docs.railway.com/config-as-code/reference
-Esta entrega prepara los archivos; no publica en una cuenta de Railway.
-No se ejecutó Docker localmente porque no está instalado en este equipo.
+   y el archivo de configuración como /landininv2/railway.json.
+3. Railway construye el Dockerfile; no agregues comandos de build o inicio.
+4. En Variables configura GOOGLE_SHEETS_WEBAPP_URL y GOOGLE_SHEETS_TOKEN.
+   Son los mismos valores privados para las seis landings.
+5. Genera el dominio en Networking. El servidor escucha en PORT (8080 por defecto).
+La integración necesita que el receptor Apps Script esté desplegado y autorizado
+en la cuenta de Zaira. Preparar archivos no publica automáticamente en Railway.
 
 Archivos
-index.html       Contenido y estructura.
-styles.css       Estilos estáticos y animaciones CSS.
-script.js        Contador, modal, formulario y avisos flotantes.
-assets/          Fotografía, fuentes y sus licencias.
-Dockerfile       Contenedor para servir la página.
-nginx.conf       Configuración de Nginx.
-railway.json     Build y comprobación de disponibilidad en la ruta /.
+index.html / styles.css / script.js  Página original y sus interacciones.
+leads-client.js                     Envío y reintentos sin duplicados.
+server.mjs                         Archivos públicos y endpoint /api/leads.
+landing.config.json                Identidad de esta landing en el servidor.
+assets/                            Imágenes, fuentes y licencias.
+Dockerfile / railway.json          Despliegue sin dependencias adicionales.
+.env.example                       Variables de ejemplo, sin claves reales.
+nginx.conf                         Configuración anterior; ya no se utiliza.
 
 Formulario
-El ZIP original no incluye un servidor, CRM ni un receptor de WhatsApp.
-El formulario valida nombre, email, WhatsApp, país y fecha de nacimiento.
-Sin un endpoint configurado, informa que los datos no se han enviado.
-No guarda datos personales en el navegador.
-Configura formEndpoint en LANDING_CONFIG, al principio de script.js, con tu
-endpoint POST que acepte JSON: name, email, phone, country y dob.
-El servidor debe responder con un estado HTTP satisfactorio al recibir los datos.
-Mantén claves privadas y credenciales en el servidor.
+Valida nombre, correo, WhatsApp, país y fecha de nacimiento. El servidor añade
+landininv2 — Nexus como origen; no acepta una identidad elegida por el cliente.
+La hoja recibe fecha y hora, landing, los cinco campos, página e ID de registro.
+No se guardan datos personales en localStorage ni se publican claves privadas.
+El ID se conserva en memoria si falla un envío y permite reintentar sin duplicar.
+Solo muestra confirmación cuando Google Sheets devuelve el ID guardado. Si falta
+configuración o falla Google, conserva el formulario y permite volver a intentarlo.
+Nunca pongas el token en script.js, index.html o un repositorio. Para uso local,
+copia .env.example a .env y completa las variables; .env está excluido de Git.
 
 Comportamiento conservado
 El modal aparece al entrar y vuelve a ofrecerse cada tres minutos, siempre que
